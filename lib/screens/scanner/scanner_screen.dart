@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ipot_pos/state/cart_controller.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../navigation/app_routes.dart';
-// import '../../state/cart_controller.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -44,7 +44,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     }
 
     setState(() => _scanned = true);
-    // Get.find<CartController>().tableId = tableId;
+    Get.find<CartController>().tableId = tableId;
     Get.toNamed(AppRoutes.menu, arguments: tableId);
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _scanned = false);
@@ -61,7 +61,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     if (segments.isEmpty) {
       // Also handle ipot://table/T001 where T001 is the host
       return uri.host == 'table' ? uri.path.replaceAll('/', '') : null;
-    }
+    }                     
     return segments.first.isNotEmpty ? segments.first : null;
   }
 

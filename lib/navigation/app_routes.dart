@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ipot_pos/screens/menu/menu_screen.dart';
 import '../screens/scanner/scanner_screen.dart';
 
 class AppRoutes {
@@ -10,5 +11,10 @@ class AppRoutes {
 
   static final pages = [
     GetPage(name: scanner, page: () => const ScannerScreen()),
+    GetPage(
+      name: menu,
+      page: () => const MenuScreen(),
+      transition: Transition.fadeIn,
+    ),
   ];
 }
