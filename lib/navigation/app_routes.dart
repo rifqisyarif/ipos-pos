@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ipot_pos/screens/menu/item_detail_screen.dart';
 import 'package:ipot_pos/screens/menu/menu_screen.dart';
 import '../screens/scanner/scanner_screen.dart';
 
@@ -15,6 +16,11 @@ class AppRoutes {
       name: menu,
       page: () => const MenuScreen(),
       transition: Transition.fadeIn,
+    ),
+     GetPage(
+      name: itemDetail,
+      page: () => const ItemDetailScreen(),
+      transition: Transition.downToUp,
     ),
   ];
 }
