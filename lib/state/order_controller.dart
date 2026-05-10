@@ -6,6 +6,7 @@ import '../models/order.dart';
 class OrderController extends GetxController {
   final isSubmitting = false.obs;
   final currentOrder = Rxn<Order>();
+  final currentStatusIdx = 0.obs;
   final error = Rxn<String>();
 
   Timer? _pollTimer;
@@ -27,21 +28,25 @@ class OrderController extends GetxController {
   }
 
   void _startPolling(String orderId) {
-    _pollTimer?.cancel();
+    if (_pollTimer?.isActive == true) {
+      _pollTimer?.cancel();
+    }
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) async {
       try {
-        final updated = await ApiClient.fetchOrderStatus(orderId);
+        currentStatusIdx.value++;
+        final updated = await ApiClient.fetchOrderStatus(orderId,currentStatusIdx.value);
         currentOrder.value = updated;
         if (updated.status == OrderStatus.served) {
           _pollTimer?.cancel();
         }
-      } catch (_) {}
+      } catch (_) {
+        print('timer error: ${_.toString()}');
+      }
     });
   }
 
   @override
   void onClose() {
-    _pollTimer?.cancel();
     super.onClose();
   }
 }
