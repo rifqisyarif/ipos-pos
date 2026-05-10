@@ -91,7 +91,6 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
       allSelected,
       notes: _notes.text.isNotEmpty ? _notes.text : null,
     );
-    Get.back();
   }
 
   @override

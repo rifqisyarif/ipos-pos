@@ -20,6 +20,7 @@ class CartController extends GetxController {
       selectedOptions: options,
       notes: notes,
     ));
+    Get.close(2);
     Get.snackbar(
       'Added to cart',
       '${menuItem.name} added!',
