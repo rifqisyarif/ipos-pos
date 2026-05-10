@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:ipot_pos/local/order_queue_service.dart';
 import '../api/api_client.dart';
 import '../models/order.dart';
 
@@ -32,9 +33,16 @@ class OrderController extends GetxController {
       _pollTimer?.cancel();
     }
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) async {
+        final orderQueueService = OrderQueueService();
+      if (orderQueueService.getQueuedOrders().isNotEmpty) {
+        final payload = orderQueueService.getQueuedOrders().first;
+        submitOrder(payload); 
+        return;
+      }
       try {
         currentStatusIdx.value++;
-        final updated = await ApiClient.fetchOrderStatus(orderId,currentStatusIdx.value);
+        final updated =
+            await ApiClient.fetchOrderStatus(orderId, currentStatusIdx.value);
         currentOrder.value = updated;
         if (updated.status == OrderStatus.served) {
           _pollTimer?.cancel();

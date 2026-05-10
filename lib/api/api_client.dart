@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ipot_pos/config/app_config.dart';
+import 'package:ipot_pos/local/menu_cache_service.dart';
+import 'package:ipot_pos/local/order_queue_service.dart';
 import '../models/restaurant.dart';
 import '../models/menu_item.dart';
 import '../models/order.dart';
@@ -103,12 +105,19 @@ class ApiClient {
 
   // ─── Menu ─────────────────────────────────────────────────────────
   static Future<Map<String, dynamic>> fetchMenu(String tableId) async {
+    final menuCacheService = MenuCacheService();
     try {
       final uri =
           Uri.parse('${AppConfig.baseUrl}/api/v1/menu?table_id=$tableId');
       final res = await http.get(uri).timeout(const Duration(seconds: 2));
-      if (res.statusCode == 200) return jsonDecode(res.body);
-    } catch (_) {}
+      if (res.statusCode == 200) {
+        menuCacheService
+            .cacheMenus(jsonDecode(res.body)); // Cache menu data to local storage
+        return jsonDecode(res.body);
+      }
+    } catch (_) {
+      return menuCacheService.getMenus(); // If request fails because of network/internet issue use cache data
+    }
     // Fallback to mock data
     await Future.delayed(const Duration(milliseconds: 800));
     return _mockData;
@@ -126,6 +135,7 @@ class ApiClient {
 
   // ─── Orders ───────────────────────────────────────────────────────
   static Future<Order> submitOrder(Map<String, dynamic> payload) async {
+    final orderQueueService = OrderQueueService();
     try {
       final uri = Uri.parse('${AppConfig.baseUrl}/api/v1/orders');
       final res = await http
@@ -134,7 +144,9 @@ class ApiClient {
               body: jsonEncode(payload))
           .timeout(const Duration(seconds: 8));
       if (res.statusCode == 201) return Order.fromJson(jsonDecode(res.body));
-    } catch (_) {}
+    } catch (_) {
+      orderQueueService.addOrder(payload);
+    }
     // Mock response
     await Future.delayed(const Duration(seconds: 1));
     return Order.fromJson({
@@ -148,7 +160,8 @@ class ApiClient {
     });
   }
 
-  static Future<Order> fetchOrderStatus(String orderId, int currentStatusIdx) async {
+  static Future<Order> fetchOrderStatus(
+      String orderId, int currentStatusIdx) async {
     try {
       final uri = Uri.parse('${AppConfig.baseUrl}/api/v1/orders/$orderId');
       final res = await http.get(uri).timeout(const Duration(seconds: 5));
