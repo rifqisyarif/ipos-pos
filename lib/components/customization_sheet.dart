@@ -14,7 +14,6 @@ class CustomizationSheet extends StatefulWidget {
     await Get.bottomSheet(
       CustomizationSheet(item: item),
       isScrollControlled: true,
-      isDismissible: true,
       backgroundColor: Colors.transparent,
     );
   }
@@ -99,104 +98,109 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
   Widget build(BuildContext context) {
     final totalPrice = widget.item.price + _extraCost;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      maxChildSize: 0.95,
-      minChildSize: 0.4,
-      builder: (_, scrollCtrl) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+    return TapRegion(
+      onTapOutside: (e) {
+        Get.back();
+      },
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        maxChildSize: 0.65,
+        minChildSize: 0.4,
+        builder: (_, scrollCtrl) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 8),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.item.name,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w800)),
-                        Text(widget.item.description,
-                            style: TextStyle(
-                                color: Colors.grey[600], fontSize: 13)),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    Formatters.price(widget.item.price),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.accent,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(),
-            // Customization groups
-            Expanded(
-              child: ListView(
-                controller: scrollCtrl,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: [
-                  ..._groups.map((g) => _GroupWidget(
-                        group: g,
-                        onToggle: (o) => _toggle(g, o),
-                      )),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _notes,
-                    decoration: InputDecoration(
-                      hintText: 'Special instructions (optional)',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      filled: true,
-                      fillColor: AppColors.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.item.name,
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w800)),
+                          Text(widget.item.description,
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 13)),
+                        ],
                       ),
-                      contentPadding: const EdgeInsets.all(14),
                     ),
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                    Text(
+                      Formatters.price(widget.item.price),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.accent,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // Add to cart
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _canSubmit ? _addToCart : null,
-                    child: Text('Add to Cart — ${Formatters.price(totalPrice)}',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              const Divider(),
+              // Customization groups
+              Expanded(
+                child: ListView(
+                  controller: scrollCtrl,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    ..._groups.map((g) => _GroupWidget(
+                          group: g,
+                          onToggle: (o) => _toggle(g, o),
+                        )),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _notes,
+                      decoration: InputDecoration(
+                        hintText: 'Special instructions (optional)',
+                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        filled: true,
+                        fillColor: AppColors.background,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.all(14),
+                      ),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+              // Add to cart
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _canSubmit ? _addToCart : null,
+                      child: Text('Add to Cart — ${Formatters.price(totalPrice)}',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
