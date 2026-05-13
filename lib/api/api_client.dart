@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:ipot_pos/config/app_config.dart';
 import 'package:ipot_pos/local/menu_cache_service.dart';
@@ -106,18 +107,24 @@ class ApiClient {
   // ─── Menu ─────────────────────────────────────────────────────────
   static Future<Map<String, dynamic>> fetchMenu(String tableId) async {
     final menuCacheService = MenuCacheService();
+
+    final connectivityResult = await Connectivity().checkConnectivity();
+    final isOffline = connectivityResult.contains(ConnectivityResult.none);
+
+    if (isOffline) {
+      return menuCacheService.getMenus();
+    }
+
     try {
       final uri =
           Uri.parse('${AppConfig.baseUrl}/api/v1/menu?table_id=$tableId');
       final res = await http.get(uri).timeout(const Duration(seconds: 2));
       if (res.statusCode == 200) {
-        menuCacheService
-            .cacheMenus(jsonDecode(res.body)); // Cache menu data to local storage
+        menuCacheService.cacheMenus(
+            jsonDecode(res.body)); // Cache menu data to local storage
         return jsonDecode(res.body);
       }
-    } catch (_) {
-      return menuCacheService.getMenus(); // If request fails because of network/internet issue use cache data
-    }
+    } catch (_) {}
     // Fallback to mock data
     await Future.delayed(const Duration(milliseconds: 800));
     return _mockData;
@@ -136,16 +143,22 @@ class ApiClient {
   // ─── Orders ───────────────────────────────────────────────────────
   static Future<Order> submitOrder(Map<String, dynamic> payload) async {
     final orderQueueService = OrderQueueService();
-    try {
-      final uri = Uri.parse('${AppConfig.baseUrl}/api/v1/orders');
-      final res = await http
-          .post(uri,
-              headers: {'Content-Type': 'application/json'},
-              body: jsonEncode(payload))
-          .timeout(const Duration(seconds: 8));
-      if (res.statusCode == 201) return Order.fromJson(jsonDecode(res.body));
-    } catch (_) {
+
+    final connectivityResult = await Connectivity().checkConnectivity();
+    final isOffline = connectivityResult.contains(ConnectivityResult.none);
+
+    if (isOffline) {
       orderQueueService.addOrder(payload);
+    } else {
+      try {
+        final uri = Uri.parse('${AppConfig.baseUrl}/api/v1/orders');
+        final res = await http
+            .post(uri,
+                headers: {'Content-Type': 'application/json'},
+                body: jsonEncode(payload))
+            .timeout(const Duration(seconds: 8));
+        if (res.statusCode == 201) return Order.fromJson(jsonDecode(res.body));
+      } catch (_) {}
     }
     // Mock response
     await Future.delayed(const Duration(seconds: 1));

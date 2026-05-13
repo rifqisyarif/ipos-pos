@@ -31,14 +31,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
     final tableId = _parseTableId(raw);
 
     if (tableId == null) {
-      Get.snackbar(
-        'Invalid QR Code',
-        'Please scan a valid restaurant table QR code.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red[400],
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        icon: const Icon(Icons.error_outline, color: Colors.white),
+      setState(() => _scanned = true);
+      _controller.stop();
+      Get.defaultDialog(
+        title: 'Invalid QR Code',
+        middleText: 'Please scan a valid restaurant table QR code.',
+        barrierDismissible: false,
+        textConfirm: 'Retry',
+        confirmTextColor: Colors.white,
+        buttonColor: AppColors.primary,
+        onConfirm: () {
+          Get.back(); // close dialog
+          setState(() => _scanned = false);
+          _controller.start();
+        },
       );
       return;
     }
@@ -61,7 +67,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     if (segments.isEmpty) {
       // Also handle ipot://table/T001 where T001 is the host
       return uri.host == 'table' ? uri.path.replaceAll('/', '') : null;
-    }                     
+    }
     return segments.first.isNotEmpty ? segments.first : null;
   }
 
@@ -149,14 +155,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                              color: Colors.white38, width: 1),
+                          border: Border.all(color: Colors.white38, width: 1),
                         ),
                         child: const Text(
                           'Use Demo Table (T001)',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600),
+                              color: Colors.white, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
@@ -218,7 +222,8 @@ class _OverlayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.black54;
     final half = boxSize / 2;
-    final rect = Rect.fromCenter(center: center, width: boxSize, height: boxSize);
+    final rect =
+        Rect.fromCenter(center: center, width: boxSize, height: boxSize);
 
     canvas.drawPath(
       Path.combine(
@@ -242,7 +247,8 @@ class _Corner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTop = corner == Alignment.topLeft || corner == Alignment.topRight;
-    final isLeft = corner == Alignment.topLeft || corner == Alignment.bottomLeft;
+    final isLeft =
+        corner == Alignment.topLeft || corner == Alignment.bottomLeft;
     const len = 28.0;
     const thick = 4.0;
 
