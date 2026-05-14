@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ipot_pos/local/connectivity_service.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
 import '../../models/order.dart';
@@ -21,26 +22,28 @@ class OrderTrackingScreen extends StatelessWidget {
         title: const Text('Order Status',
             style: TextStyle(fontWeight: FontWeight.w800)),
         automaticallyImplyLeading: false,
-        actions: [
-          TextButton(
-            onPressed: () => Get.offAllNamed(AppRoutes.scanner),
-            child: const Text('New Order',
-                style: TextStyle(color: Colors.white70)),
-          ),
-        ],
       ),
       body: Obx(() {
-        final order = orderCtrl.currentOrder.value;
         final queue = orderCtrl.queuedOrders;
+        final queuedIds = queue.map((q) => q['id']).toSet();
+        final orders = orderCtrl.listCurrentOrder
+            .where((o) => !queuedIds.contains(o.id))
+            .toList();
 
         return CustomScrollView(
           slivers: [
-            // ── Active order ──────────────────────────────────────
-            SliverToBoxAdapter(
-              child: order == null
-                  ? _NoActiveOrder(hasQueue: queue.isNotEmpty)
-                  : _ActiveOrderSection(order: order),
-            ),
+            // ── Active orders ──────────────────────────────────────
+            if (orders.isEmpty)
+              SliverToBoxAdapter(
+                child: _NoActiveOrder(hasQueue: queue.isNotEmpty),
+              )
+            else
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (_, i) => _ActiveOrderSection(order: orders[i]),
+                  childCount: orders.length,
+                ),
+              ),
 
             // ── Queue section ─────────────────────────────────────
             if (queue.isNotEmpty) ...[
@@ -82,8 +85,7 @@ class OrderTrackingScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('Order More',
-            style:
-                TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -113,12 +115,12 @@ class _ActiveOrderSection extends StatelessWidget {
   const _ActiveOrderSection({required this.order});
 
   String get _statusMessage => switch (order.status) {
-        OrderStatus.pending   => 'Your order has been received!',
+        OrderStatus.pending => 'Your order has been received!',
         OrderStatus.confirmed => 'Great! Your order is confirmed.',
         OrderStatus.preparing => 'Our chefs are preparing your food 🍳',
-        OrderStatus.ready     => 'Your order is ready! 🎉',
-        OrderStatus.served    => 'Enjoy your meal! 😋',
-        _                     => 'Tracking your order...',
+        OrderStatus.ready => 'Your order is ready! 🎉',
+        OrderStatus.served => 'Enjoy your meal! 😋',
+        _ => 'Tracking your order...',
       };
 
   @override
@@ -155,8 +157,7 @@ class _ActiveOrderSection extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   'Table: ${order.tableId}  •  Total: ${Formatters.price(order.total)}',
-                  style:
-                      const TextStyle(color: Colors.white70, fontSize: 13),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ],
             ),
@@ -186,8 +187,7 @@ class _ActiveOrderSection extends StatelessWidget {
                       size: 15, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text('Est. ${order.estimatedMinutes} min',
-                      style: const TextStyle(
-                          color: AppColors.textSecondary)),
+                      style: const TextStyle(color: AppColors.textSecondary)),
                 ],
               ),
             ),
@@ -202,9 +202,7 @@ class _ActiveOrderSection extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10)
+                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
               ],
             ),
             child: OrderStatusStepper(currentStatus: order.status),
@@ -227,21 +225,8 @@ class _ActiveOrderSection extends StatelessWidget {
                   const SizedBox(width: 8),
                   const Text('Auto-updating every 8 s',
                       style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary)),
+                          fontSize: 11, color: AppColors.textSecondary)),
                 ],
-              ),
-            ),
-          ],
-
-          if (order.status == OrderStatus.served) ...[
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => Get.offAllNamed(AppRoutes.scanner),
-                icon: const Icon(Icons.qr_code_scanner),
-                label: const Text('Scan for New Order'),
               ),
             ),
           ],
@@ -267,8 +252,7 @@ class _NoActiveOrder extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
-          const Icon(Icons.receipt_long_outlined,
-              size: 64, color: Colors.grey),
+          const Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey),
           const SizedBox(height: 12),
           Text(
             hasQueue
@@ -303,56 +287,99 @@ class _QueueHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
-      child: Row(
-        children: [
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+    final connectivity = Get.find<ConnectivityService>();
+
+    return Obx(() {
+      final online = connectivity.isOnline.value;
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Context pill ──────────────────────────────────────
+            Row(
               children: [
-                const Icon(Icons.wifi_off,
-                    size: 14, color: AppColors.warning),
-                const SizedBox(width: 5),
-                Text(
-                  '$count Queued${count > 1 ? ' Orders' : ' Order'}',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.warning,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: (online ? AppColors.warning : Colors.grey)
+                        .withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        online ? Icons.schedule : Icons.wifi_off,
+                        size: 13,
+                        color: online
+                            ? AppColors.warning
+                            : AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        '$count order${count > 1 ? 's' : ''} in queue',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: online
+                              ? AppColors.warning
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                if (online)
+                  Semantics(
+                    button: true,
+                    label: 'Retry all queued orders',
+                    child: GestureDetector(
+                      onTap: onRetryAll,
+                      child: const Text('Retry All',
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  )
+                else
+                  const Text('Will retry when online',
+                      style: TextStyle(
+                          fontSize: 12, color: AppColors.textSecondary)),
+                const SizedBox(width: 14),
+                Semantics(
+                  button: true,
+                  label: 'Clear all queued orders',
+                  child: GestureDetector(
+                    onTap: onClearAll,
+                    child: const Text('Clear',
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.accent,
+                            fontWeight: FontWeight.w600)),
                   ),
                 ),
               ],
             ),
-          ),
-          const Spacer(),
-          GestureDetector(
-            onTap: onRetryAll,
-            child: const Text('Retry All',
-                style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600)),
-          ),
-          const SizedBox(width: 16),
-          GestureDetector(
-            onTap: onClearAll,
-            child: const Text('Clear All',
-                style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.accent,
-                    fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-    );
+
+            // ── Subtext: tells user exactly what will happen ──────
+            const SizedBox(height: 6),
+            Text(
+              online
+                  ? 'Tap "Retry All" to submit now, or they\'ll send automatically on the next poll.'
+                  : 'These orders are saved locally. They\'ll be submitted automatically once you reconnect.',
+              style:
+                  const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -367,25 +394,24 @@ class _QueuedOrderTile extends StatelessWidget {
   final VoidCallback onRetry;
   final VoidCallback onRemove;
 
-  const _QueuedOrderTile({
-    super.key,
-    required this.queued,
-    required this.index,
-    required this.isSubmitting,
-    required this.onRetry,
-    required this.onRemove,
-  });
+  const _QueuedOrderTile(
+      {super.key,
+      required this.queued,
+      required this.index,
+      required this.isSubmitting,
+      required this.onRetry,
+      required this.onRemove});
 
   // ── Read directly from the raw map ──────────────────────────────────
-  String get _localId   => queued['local_id'] as String? ?? '—';
-  String get _tableId   => queued['table_id'] as String? ?? '—';
-  double get _total     => (queued['total'] as num?)?.toDouble() ?? 0.0;
+  String get _localId => queued['local_id'] as String? ?? '—';
+  String get orderId => queued['id'] as String? ?? '—';
+  String get _tableId => queued['table_id'] as String? ?? '—';
+  double get _total => (queued['total'] as num?)?.toDouble() ?? 0.0;
 
   int get _itemCount {
     final items = queued['items'] as List?;
     if (items == null) return 0;
-    return items.fold<int>(
-        0, (sum, i) => sum + ((i['quantity'] as int?) ?? 1));
+    return items.fold<int>(0, (sum, i) => sum + ((i['quantity'] as int?) ?? 1));
   }
 
   String get _timeAgo {
@@ -405,8 +431,8 @@ class _QueuedOrderTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-            color: AppColors.warning.withOpacity(0.35), width: 1.2),
+        border:
+            Border.all(color: AppColors.warning.withOpacity(0.35), width: 1.2),
         boxShadow: [
           BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -415,14 +441,14 @@ class _QueuedOrderTile extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: 12),
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
         child: Row(
           children: [
             // Index bubble
             Container(
-              width: 34,
-              height: 34,
+              constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppColors.warning.withOpacity(0.15),
                 shape: BoxShape.circle,
@@ -448,7 +474,7 @@ class _QueuedOrderTile extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          _localId,
+                          orderId,
                           style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
@@ -471,8 +497,7 @@ class _QueuedOrderTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(_timeAgo,
                         style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary)),
+                            fontSize: 11, color: AppColors.textSecondary)),
                   ],
                 ],
               ),
@@ -485,41 +510,47 @@ class _QueuedOrderTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                GestureDetector(
-                  onTap: isSubmitting ? null : onRetry,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: isSubmitting
-                          ? Colors.grey[200]
-                          : AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
+                Semantics(
+                  button: true,
+                  label: 'Retry order',
+                  child: GestureDetector(
+                    onTap: isSubmitting ? null : onRetry,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color:
+                            isSubmitting ? Colors.grey[200] : AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: isSubmitting
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.grey),
+                            )
+                          : const Text('Retry',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700)),
                     ),
-                    child: isSubmitting
-                        ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.grey),
-                          )
-                        : const Text('Retry',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700)),
                   ),
                 ),
                 const SizedBox(height: 6),
-                GestureDetector(
-                  onTap: onRemove,
-                  child: const Text('Remove',
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.accent,
-                          fontWeight: FontWeight.w600)),
+                Semantics(
+                  button: true,
+                  label: 'Remove order',
+                  child: GestureDetector(
+                    onTap: onRemove,
+                    child: const Text('Remove',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.accent,
+                            fontWeight: FontWeight.w600)),
+                  ),
                 ),
               ],
             ),

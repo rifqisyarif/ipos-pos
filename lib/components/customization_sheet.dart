@@ -54,8 +54,7 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
     return true;
   }
 
-  double get _extraCost =>
-      _groups.fold(0.0, (sum, g) {
+  double get _extraCost => _groups.fold(0.0, (sum, g) {
         return sum + g.selectedOptions.fold(0.0, (s, o) => s + o.priceModifier);
       });
 
@@ -79,13 +78,27 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
 
   void _addToCart() {
     if (!_canSubmit) {
-      Get.snackbar('Required', 'Please make all required selections.',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Required',
+        'Please make all required selections.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(12),
+
+        // Fade animation
+        animationDuration: const Duration(milliseconds: 300),
+        forwardAnimationCurve: Curves.easeOut,
+        reverseAnimationCurve: Curves.easeIn,
+
+        // Makes it fade instead of slide
+        snackStyle: SnackStyle.FLOATING,
+      );
       return;
     }
-    final allSelected = _groups
-        .expand((g) => g.options.where((o) => o.isSelected))
-        .toList();
+    final allSelected =
+        _groups.expand((g) => g.options.where((o) => o.isSelected)).toList();
     Get.find<CartController>().addItem(
       widget.item,
       allSelected,
@@ -126,7 +139,8 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
               ),
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Row(
                   children: [
                     Expanded(
@@ -192,8 +206,10 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _canSubmit ? _addToCart : null,
-                      child: Text('Add to Cart — ${Formatters.price(totalPrice)}',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      child: Text(
+                          'Add to Cart — ${Formatters.price(totalPrice)}',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ),
@@ -227,8 +243,7 @@ class _GroupWidget extends StatelessWidget {
                         fontSize: 15, fontWeight: FontWeight.w700)),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: group.required
                       ? AppColors.accent.withOpacity(0.12)
@@ -255,58 +270,64 @@ class _GroupWidget extends StatelessWidget {
             ],
           ),
         ),
-        ...group.options.map((o) => GestureDetector(
-              onTap: () => onToggle(o),
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color: o.isSelected
-                      ? AppColors.primary.withOpacity(0.06)
-                      : AppColors.background,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: o.isSelected ? AppColors.primary : Colors.transparent,
-                    width: 1.5,
+        ...group.options.map((o) => Semantics(
+              button: true,
+              toggled: o.isSelected,
+              label: '${o.name}, extra ${Formatters.priceModifier(o.priceModifier)}',
+              child: GestureDetector(
+                onTap: () => onToggle(o),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: o.isSelected
+                        ? AppColors.primary.withOpacity(0.06)
+                        : AppColors.background,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color:
+                          o.isSelected ? AppColors.primary : Colors.transparent,
+                      width: 1.5,
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      group.maxSelections == 1
-                          ? (o.isSelected
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_off)
-                          : (o.isSelected
-                              ? Icons.check_box
-                              : Icons.check_box_outline_blank),
-                      color: o.isSelected
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(o.name,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: o.isSelected
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                          )),
-                    ),
-                    Text(
-                      Formatters.priceModifier(o.priceModifier),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: o.priceModifier > 0
-                            ? AppColors.accent
+                  child: Row(
+                    children: [
+                      Icon(
+                        group.maxSelections == 1
+                            ? (o.isSelected
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off)
+                            : (o.isSelected
+                                ? Icons.check_box
+                                : Icons.check_box_outline_blank),
+                        color: o.isSelected
+                            ? AppColors.primary
                             : AppColors.textSecondary,
+                        size: 20,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(o.name,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: o.isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            )),
+                      ),
+                      Text(
+                        Formatters.priceModifier(o.priceModifier),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: o.priceModifier > 0
+                              ? AppColors.accent
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             )),

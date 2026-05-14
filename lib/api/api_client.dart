@@ -110,8 +110,10 @@ class ApiClient {
 
     final connectivityResult = await Connectivity().checkConnectivity();
     final isOffline = connectivityResult.contains(ConnectivityResult.none);
+    print('connectivityResult: $connectivityResult');
 
     if (isOffline) {
+      print('masuk offline');
       return menuCacheService.getMenus();
     }
 
@@ -127,6 +129,8 @@ class ApiClient {
     } catch (_) {}
     // Fallback to mock data
     await Future.delayed(const Duration(milliseconds: 800));
+    menuCacheService.cacheMenus(_mockData); // Cache menu data to local storage
+    print('offline data: ${menuCacheService.getMenus()}');
     return _mockData;
   }
 
@@ -147,8 +151,22 @@ class ApiClient {
     final connectivityResult = await Connectivity().checkConnectivity();
     final isOffline = connectivityResult.contains(ConnectivityResult.none);
 
+    final orderId = payload['id'] ??
+        'ORD-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+
     if (isOffline) {
-      orderQueueService.addOrder(payload);
+      final queuedOrders = orderQueueService.getQueuedOrders();
+      final alreadyQueued = queuedOrders.any((q) => q['id'] == orderId);
+
+      if (!alreadyQueued) {
+        final queued = {
+          ...payload,
+          'id': orderId,
+          'local_id': 'LOCAL-${DateTime.now().millisecondsSinceEpoch}',
+          'queued_at': DateTime.now().toIso8601String(),
+        };
+        orderQueueService.addOrder(queued);
+      }
     } else {
       try {
         final uri = Uri.parse('${AppConfig.baseUrl}/api/v1/orders');
@@ -156,15 +174,15 @@ class ApiClient {
             .post(uri,
                 headers: {'Content-Type': 'application/json'},
                 body: jsonEncode(payload))
-            .timeout(const Duration(seconds: 8));
+            .timeout(const Duration(seconds: 4));
         if (res.statusCode == 201) return Order.fromJson(jsonDecode(res.body));
       } catch (_) {}
     }
+
     // Mock response
     await Future.delayed(const Duration(seconds: 1));
     return Order.fromJson({
-      'id':
-          'ORD-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
+      'id': orderId,
       'table_id': payload['table_id'],
       'status': OrderStatus.pending,
       'total': payload['total'],

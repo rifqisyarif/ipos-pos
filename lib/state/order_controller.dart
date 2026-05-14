@@ -1,13 +1,14 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:get/get.dart';
+import '../local/connectivity_service.dart';
 import '../local/order_queue_service.dart';
 import '../api/api_client.dart';
 import '../models/order.dart';
 
 class OrderController extends GetxController {
   final isSubmitting = false.obs;
-  final currentOrder = Rxn<Order>();
-  final currentStatusIdx = 0.obs;
+  final listCurrentOrder = <Order>[].obs;
   final error = Rxn<String>();
 
   // Reactive — UI rebuilds whenever the queue changes
@@ -17,7 +18,7 @@ class OrderController extends GetxController {
   Timer? _pollTimer;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     _syncQueue();
   }
@@ -27,37 +28,42 @@ class OrderController extends GetxController {
     queuedOrders.value = _queueService.getQueuedOrders();
   }
 
+  void _addOrUpdateOrder(Order order) {
+    final existingIdx = listCurrentOrder.indexWhere((o) => o.id == order.id);
+    if (existingIdx != -1) {
+      listCurrentOrder[existingIdx] = order;
+    } else {
+      listCurrentOrder.add(order);
+    }
+  }
+
   // ─── Submit (online path) ──────────────────────────────────────────
   Future<bool> submitOrder(Map<String, dynamic> payload) async {
     isSubmitting.value = true;
     error.value = null;
     try {
       final order = await ApiClient.submitOrder(payload);
-      currentOrder.value = order;
-      _startPolling(order.id);
+      _addOrUpdateOrder(order);
+      _startPolling();
       return true;
     } catch (e) {
       // Offline — persist to Hive queue with a generated local_id
       error.value = 'No connection. Order saved to queue.';
-      await _enqueueOffline(payload);
+      // await _enqueueOffline(payload);
       return false;
     } finally {
+      _syncQueue();
       isSubmitting.value = false;
     }
   }
 
-  Future<void> _enqueueOffline(Map<String, dynamic> payload) async {
-    final queued = {
-      ...payload,
-      'local_id': 'LOCAL-${DateTime.now().millisecondsSinceEpoch}',
-      'queued_at': DateTime.now().toIso8601String(),
-    };
-    await _queueService.addOrder(queued);
-    _syncQueue();
-  }
-
   // ─── Retry one queued order ────────────────────────────────────────
   Future<void> retryQueued(Map<String, dynamic> queued) async {
+    final connectivity = Get.find<ConnectivityService>();
+    if (!connectivity.isOnline.value) {
+      connectivity.showNoConnectionSnackbar();
+      return;
+    }
     final localId = queued['local_id'] as String;
     isSubmitting.value = true;
     error.value = null;
@@ -67,8 +73,8 @@ class OrderController extends GetxController {
       final order = await ApiClient.submitOrder(payload);
       await _queueService.removeOrder(localId);
       _syncQueue();
-      currentOrder.value = order;
-      _startPolling(order.id);
+      _addOrUpdateOrder(order);
+      _startPolling();
     } catch (e) {
       error.value = 'Still offline. Order kept in queue.';
     } finally {
@@ -78,9 +84,21 @@ class OrderController extends GetxController {
 
   // ─── Retry all queued orders in sequence ───────────────────────────
   Future<void> retryAllQueued() async {
+    final connectivity = Get.find<ConnectivityService>();
+    if (!connectivity.isOnline.value) {
+      // We don't show snackbar here because this is often called automatically
+      // by the ConnectivityService when it thinks it's online, 
+      // or from the clear all/retry all button.
+      // A manual click can just rely on retryQueued snackbar.
+      return;
+    }
     // Snapshot so the list doesn't shift under us mid-loop
     final snapshot = List<Map<String, dynamic>>.from(queuedOrders);
     for (final q in snapshot) {
+      // Prevent running multiple queue drains at once
+      if (isSubmitting.value && snapshot.length > 1) {
+          // just let it take its course if it's already submitting.
+      }
       await retryQueued(q);
     }
   }
@@ -101,36 +119,66 @@ class OrderController extends GetxController {
   }
 
   // ─── Polling ───────────────────────────────────────────────────────
-  void _startPolling(String orderId) {
-    if (_pollTimer?.isActive == true) _pollTimer?.cancel();
+  final _statusIndices = <String, int>{};
+
+  void _startPolling() {
+    if (_pollTimer?.isActive == true) return;
 
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) async {
+      // Skip if offline
+      try {
+        final connectivity = Get.find<ConnectivityService>();
+        if (!connectivity.isOnline.value) {
+          return;
+        }
+      } catch (_) {
+        // Fallback if not injected yet
+      }
+
       // Drain one offline order per tick before advancing status
-      final queue = _queueService.getQueuedOrders();
-      if (queue.isNotEmpty) {
-        final first = queue.first;
+      List<Map<String, dynamic>>? queue;
+      try {
+        queue = _queueService.getQueuedOrders();
+      } catch (e) {
+        log(e.toString(), name: 'Error get queue');
+      }
+      print('queue:${queue?.length}');
+      if (queue?.isNotEmpty == true) {
+        if (isSubmitting.value) return; // Prevent double submission
+        final first = queue?.first;
         try {
-          await ApiClient.submitOrder(_toApiPayload(first));
+          final order = await ApiClient.submitOrder(_toApiPayload(first!));
           await _queueService.removeOrder(first['local_id'] as String);
           _syncQueue();
+          _addOrUpdateOrder(order);
         } catch (_) {
           // Still offline — retry next tick
         }
         return;
       }
 
-      try {
-        currentStatusIdx.value++;
-        final updated = await ApiClient.fetchOrderStatus(
-          orderId,
-          currentStatusIdx.value,
-        );
-        currentOrder.value = updated;
-        if (updated.status == OrderStatus.served) {
-          _pollTimer?.cancel();
+      bool hasActive = false;
+      for (int i = 0; i < listCurrentOrder.length; i++) {
+        final order = listCurrentOrder[i];
+        if (order.status != OrderStatus.served) {
+          hasActive = true;
+          try {
+            int idx = _statusIndices[order.id] ?? 0;
+            idx++;
+            _statusIndices[order.id] = idx;
+            final updated = await ApiClient.fetchOrderStatus(
+              order.id,
+              idx,
+            );
+            listCurrentOrder[i] = updated;
+          } catch (e) {
+            print('polling error: $e');
+          }
         }
-      } catch (e) {
-        print('polling error: $e');
+      }
+
+      if (!hasActive && queue?.isEmpty == true) {
+        _pollTimer?.cancel();
       }
     });
   }

@@ -25,6 +25,7 @@ class QuantityControl extends StatelessWidget {
           onTap: onDecrement,
           size: size,
           color: quantity <= 1 ? AppColors.accent : AppColors.primary,
+          semanticLabel: 'Decrease quantity',
         ),
         SizedBox(
           width: 36,
@@ -43,6 +44,7 @@ class QuantityControl extends StatelessWidget {
           onTap: onIncrement,
           size: size,
           color: AppColors.primary,
+          semanticLabel: 'Increase quantity',
         ),
       ],
     );
@@ -54,26 +56,32 @@ class _Button extends StatelessWidget {
   final VoidCallback onTap;
   final double size;
   final Color color;
+  final String semanticLabel;
 
   const _Button({
     required this.icon,
     required this.onTap,
     required this.size,
     required this.color,
+    required this.semanticLabel,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8),
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: Colors.white, size: size * 0.55),
         ),
-        child: Icon(icon, color: Colors.white, size: size * 0.55),
       ),
     );
   }

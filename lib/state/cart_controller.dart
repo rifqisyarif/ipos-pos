@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../models/cart_item.dart';
@@ -11,7 +12,8 @@ class CartController extends GetxController {
 
   double get subtotal => items.fold(0.0, (sum, i) => sum + i.totalPrice);
 
-  void addItem(MenuItem menuItem, List<CustomizationOption> options, {String? notes}) {
+  void addItem(MenuItem menuItem, List<CustomizationOption> options,
+      {String? notes}) {
     final newId = '${menuItem.id}_${DateTime.now().millisecondsSinceEpoch}';
     items.add(CartItem(
       id: newId,
@@ -24,9 +26,19 @@ class CartController extends GetxController {
     Get.snackbar(
       'Added to cart',
       '${menuItem.name} added!',
-      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
       duration: const Duration(seconds: 2),
       margin: const EdgeInsets.all(12),
+
+      // Fade animation
+      animationDuration: const Duration(milliseconds: 300),
+      forwardAnimationCurve: Curves.easeOut,
+      reverseAnimationCurve: Curves.easeIn,
+
+      // Makes it fade instead of slide
+      snackStyle: SnackStyle.FLOATING,
     );
   }
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive/hive.dart';
+import 'package:ipot_pos/local/connectivity_service.dart';
 import 'package:ipot_pos/navigation/app_routes.dart';
 import 'package:ipot_pos/state/cart_controller.dart';
+import 'package:ipot_pos/state/order_controller.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
@@ -12,6 +12,13 @@ void main() async {
   final dir = await getApplicationDocumentsDirectory();
 
   Hive.init(dir.path);
+
+  await Hive.openBox('offline_orders');
+  await Hive.openBox('menu_cache');
+  Get.put(ConnectivityService(), permanent: true);
+  Get.put(CartController(), permanent: true);
+  Get.put(OrderController(), permanent: true);
+
   runApp(const MainApp());
 }
 
@@ -20,8 +27,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Register global CartController
-    Get.put(CartController(), permanent: true);
 
     return GetMaterialApp(
       getPages: AppRoutes.pages,

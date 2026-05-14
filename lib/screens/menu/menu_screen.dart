@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide MenuController;
 import 'package:get/get.dart';
 import 'package:ipot_pos/components/cart_badge.dart';
+import 'package:ipot_pos/components/connectivity_banner.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
 import '../../components/menu_item_card.dart';
@@ -34,16 +35,18 @@ class MenuScreen extends StatelessWidget {
         ),
         actions: const [CartBadge()],
       ),
-      body: Obx(() {
-        if (menuCtrl.isLoading.value) return const _LoadingView();
-        if (menuCtrl.error.value != null) {
-          return _ErrorView(
-            message: menuCtrl.error.value!,
-            onRetry: () => menuCtrl.loadMenu(tableId),
-          );
-        }
-        return _MenuContent(menuCtrl: menuCtrl);
-      }),
+      body: ConnectivityBanner(
+        child: Obx(() {
+          if (menuCtrl.isLoading.value) return const _LoadingView();
+          if (menuCtrl.error.value != null) {
+            return _ErrorView(
+              message: menuCtrl.error.value!,
+              onRetry: () => menuCtrl.loadMenu(tableId),
+            );
+          }
+          return _MenuContent(menuCtrl: menuCtrl,tableId: tableId,);
+        }),
+      ),
       bottomNavigationBar: Obx(() {
         if (cartCtrl.itemCount == 0) return const SizedBox.shrink();
         return _CartBar(cart: cartCtrl);
@@ -54,7 +57,8 @@ class MenuScreen extends StatelessWidget {
 
 class _MenuContent extends StatelessWidget {
   final MenuController menuCtrl;
-  const _MenuContent({required this.menuCtrl});
+  final String tableId;
+  const _MenuContent({required this.tableId, required this.menuCtrl});
 
   @override
   Widget build(BuildContext context) {
@@ -151,14 +155,20 @@ class _MenuContent extends StatelessWidget {
                 ),
               );
             }
-            return ListView.builder(
-              padding: const EdgeInsets.only(top: 8, bottom: 100),
-              itemCount: items.length,
-              itemBuilder: (_, i) => MenuItemCard(
-                item: items[i],
-                onTap: () => Get.toNamed(
-                  AppRoutes.itemDetail,
-                  arguments: items[i].id,
+            return RefreshIndicator(
+              onRefresh: () {
+                menuCtrl.loadMenu(tableId);
+                return Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: ListView.builder(
+                padding: const EdgeInsets.only(top: 8, bottom: 100),
+                itemCount: items.length,
+                itemBuilder: (_, i) => MenuItemCard(
+                  item: items[i],
+                  onTap: () => Get.toNamed(
+                    AppRoutes.itemDetail,
+                    arguments: items[i].id,
+                  ),
                 ),
               ),
             );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ipot_pos/components/connectivity_banner.dart';
 import 'package:ipot_pos/components/quality_control.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
@@ -13,7 +14,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Get.find<CartController>();
-    final orderCtrl = Get.put(OrderController());
+    final orderCtrl = Get.put(OrderController(), permanent: true);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -30,35 +31,37 @@ class CartScreen extends StatelessWidget {
               : const SizedBox.shrink()),
         ],
       ),
-      body: Obx(() {
-        if (cart.items.isEmpty) return const _EmptyCart();
-        return Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                itemCount: cart.items.length,
-                itemBuilder: (_, i) {
-                  final item = cart.items[i];
-                  return _CartItemTile(
-                    key: ValueKey(item.id),
-                    cartItemId: item.id,
-                    name: item.menuItem.name,
-                    customizations: item.customizationSummary,
-                    quantity: item.quantity,
-                    unitPrice: item.unitPrice,
-                    totalPrice: item.totalPrice,
-                    onIncrement: () => cart.increment(item.id),
-                    onDecrement: () => cart.decrement(item.id),
-                    onRemove: () => cart.remove(item.id),
-                  );
-                },
+      body: ConnectivityBanner(
+        child: Obx(() {
+          if (cart.items.isEmpty) return const _EmptyCart();
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  itemCount: cart.items.length,
+                  itemBuilder: (_, i) {
+                    final item = cart.items[i];
+                    return _CartItemTile(
+                      key: ValueKey(item.id),
+                      cartItemId: item.id,
+                      name: item.menuItem.name,
+                      customizations: item.customizationSummary,
+                      quantity: item.quantity,
+                      unitPrice: item.unitPrice,
+                      totalPrice: item.totalPrice,
+                      onIncrement: () => cart.increment(item.id),
+                      onDecrement: () => cart.decrement(item.id),
+                      onRemove: () => cart.remove(item.id),
+                    );
+                  },
+                ),
               ),
-            ),
-            _OrderSummary(cart: cart, orderCtrl: orderCtrl),
-          ],
-        );
-      }),
+              _OrderSummary(cart: cart, orderCtrl: orderCtrl),
+            ],
+          );
+        }),
+      ),
     );
   }
 
@@ -140,6 +143,7 @@ class _CartItemTile extends StatelessWidget {
                   color: Colors.grey[400],
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
+                  tooltip: 'Remove item',
                 ),
               ],
             ),
@@ -162,26 +166,32 @@ class _CartItemTile extends StatelessWidget {
                   onIncrement: onIncrement,
                   onDecrement: onDecrement,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      Formatters.price(totalPrice),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.accent,
-                      ),
-                    ),
-                    if (quantity > 1)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
                       Text(
-                        '${Formatters.price(unitPrice)} each',
+                        Formatters.price(totalPrice),
                         style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textSecondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.accent,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                  ],
+                      if (quantity > 1)
+                        Text(
+                          '${Formatters.price(unitPrice)} each',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -249,8 +259,8 @@ class _OrderSummary extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Total',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w800, fontSize: 16)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                 Obx(() => Text(
                       Formatters.price(cart.subtotal),
                       style: const TextStyle(
@@ -298,8 +308,7 @@ class _EmptyCart extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.shopping_bag_outlined,
-              size: 80, color: Colors.grey),
+          const Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey),
           const SizedBox(height: 16),
           const Text('Your cart is empty',
               style: TextStyle(

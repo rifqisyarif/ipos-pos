@@ -12,8 +12,11 @@ class MenuItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    return Semantics(
+      button: true,
+      label: 'Order ${item.name}, Price: ${Formatters.price(item.price)}',
+      child: GestureDetector(
+        onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md, vertical: AppSpacing.sm),
@@ -83,6 +86,7 @@ class MenuItemCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
