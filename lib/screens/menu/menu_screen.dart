@@ -6,6 +6,7 @@ import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
 import '../../components/menu_item_card.dart';
 import '../../navigation/app_routes.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../../state/cart_controller.dart';
 import '../../state/menu_controller.dart';
 
@@ -26,7 +27,7 @@ class MenuScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Obx(() => Text(
-              menuCtrl.restaurant.value?.name ?? 'Menu',
+              menuCtrl.restaurant.value?.name ?? AppLocalizations.of(context)!.menu,
               style: const TextStyle(fontWeight: FontWeight.w800),
             )),
         leading: IconButton(
@@ -71,7 +72,7 @@ class _MenuContent extends StatelessWidget {
           child: TextField(
             onChanged: menuCtrl.setSearch,
             decoration: InputDecoration(
-              hintText: 'Search menu...',
+              hintText: AppLocalizations.of(context)!.searchMenu,
               prefixIcon:
                   const Icon(Icons.search, color: AppColors.textSecondary),
               filled: true,
@@ -143,14 +144,14 @@ class _MenuContent extends StatelessWidget {
           child: Obx(() {
             final items = menuCtrl.filteredItems;
             if (items.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.search_off, size: 64, color: Colors.grey),
-                    SizedBox(height: 12),
-                    Text('No items found',
-                        style: TextStyle(color: AppColors.textSecondary)),
+                    const Icon(Icons.search_off, size: 64, color: Colors.grey),
+                    const SizedBox(height: 12),
+                    Text(AppLocalizations.of(context)!.noItems,
+                        style: const TextStyle(color: AppColors.textSecondary)),
                   ],
                 ),
               );
@@ -219,10 +220,10 @@ class _CartBar extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'View Cart',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.viewCart,
+                  style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 15),
@@ -256,14 +257,14 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: AppColors.accent),
-          SizedBox(height: 16),
-          Text('Loading menu...',
-              style: TextStyle(color: AppColors.textSecondary)),
+          const CircularProgressIndicator(color: AppColors.accent),
+          const SizedBox(height: 16),
+          Text(AppLocalizations.of(context)!.loadingMenu,
+              style: const TextStyle(color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -293,7 +294,7 @@ class _ErrorView extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ),

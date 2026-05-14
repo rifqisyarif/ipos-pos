@@ -6,6 +6,7 @@ import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
 import '../../navigation/app_routes.dart';
 import '../../state/cart_controller.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../../state/order_controller.dart';
 
 class CartScreen extends StatelessWidget {
@@ -19,14 +20,14 @@ class CartScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('My Cart',
-            style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(AppLocalizations.of(context)!.myCart,
+            style: const TextStyle(fontWeight: FontWeight.w800)),
         actions: [
           Obx(() => cart.items.isNotEmpty
               ? TextButton(
-                  onPressed: () => _confirmClear(cart),
-                  child: const Text('Clear',
-                      style: TextStyle(color: Colors.white70)),
+                  onPressed: () => _confirmClear(context, cart),
+                  child: Text(AppLocalizations.of(context)!.clear,
+                      style: const TextStyle(color: Colors.white70)),
                 )
               : const SizedBox.shrink()),
         ],
@@ -65,12 +66,12 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  void _confirmClear(CartController cart) {
+  void _confirmClear(BuildContext context, CartController cart) {
     Get.defaultDialog(
-      title: 'Clear Cart',
-      middleText: 'Remove all items from cart?',
-      textConfirm: 'Clear',
-      textCancel: 'Cancel',
+      title: AppLocalizations.of(context)!.clearCart,
+      middleText: AppLocalizations.of(context)!.clearCartConfirm,
+      textConfirm: AppLocalizations.of(context)!.clear,
+      textCancel: AppLocalizations.of(context)!.cancel,
       confirmTextColor: Colors.white,
       buttonColor: AppColors.accent,
       onConfirm: () {
@@ -238,8 +239,8 @@ class _OrderSummary extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text('Subtotal',
-                    style: TextStyle(color: AppColors.textSecondary)),
+                Text(AppLocalizations.of(context)!.subtotal,
+                    style: const TextStyle(color: AppColors.textSecondary)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Obx(() => Text(
@@ -253,20 +254,20 @@ class _OrderSummary extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Tax (10%)',
-                    style: TextStyle(color: AppColors.textSecondary)),
-                Text('Calculated at checkout'),
+                Text(AppLocalizations.of(context)!.tax,
+                    style: const TextStyle(color: AppColors.textSecondary)),
+                Text(AppLocalizations.of(context)!.taxDesc),
               ],
             ),
             const Divider(height: 20),
             Row(
               children: [
-                const Text('Total',
+                Text(AppLocalizations.of(context)!.total,
                     style:
-                        TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                        const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Obx(() => Text(
@@ -297,9 +298,9 @@ class _OrderSummary extends StatelessWidget {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2),
                           )
-                        : const Text(
-                            'Place Order',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context)!.placeOrder,
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                   ),
@@ -322,19 +323,19 @@ class _EmptyCart extends StatelessWidget {
         children: [
           const Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey),
           const SizedBox(height: 16),
-          const Text('Your cart is empty',
-              style: TextStyle(
+          Text(AppLocalizations.of(context)!.cartEmpty,
+              style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textSecondary)),
           const SizedBox(height: 8),
-          const Text('Browse the menu and add some items!',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text(AppLocalizations.of(context)!.browseMenuAdd,
+              style: const TextStyle(color: AppColors.textSecondary)),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => Get.back(),
             icon: const Icon(Icons.restaurant_menu),
-            label: const Text('Browse Menu'),
+            label: Text(AppLocalizations.of(context)!.browseMenu),
           ),
         ],
       ),

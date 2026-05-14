@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ipot_pos/utils/constant.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../local/connectivity_service.dart';
 
 /// Wrap any Scaffold body with this to get the sliding banner.
@@ -76,16 +77,16 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
           sizeFactor: _slide,
           axisAlignment: -1,
           child: _showingRestored
-              ? const _BannerContent(
+              ? _BannerContent(
                   color: AppColors.success,
                   icon: Icons.wifi,
-                  message: 'Back online',
+                  message: AppLocalizations.of(context)!.backOnline,
                   sub: 'Retrying queued orders...',
                 )
-              : const _BannerContent(
+              : _BannerContent(
                   color: AppColors.warning,
                   icon: Icons.wifi_off,
-                  message: "You're offline",
+                  message: AppLocalizations.of(context)!.noInternet,
                   sub: 'Orders will be saved and retried automatically',
                 ),
         ),

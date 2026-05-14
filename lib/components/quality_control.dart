@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ipot_pos/utils/constant.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 
 class QuantityControl extends StatelessWidget {
   final int quantity;
@@ -25,7 +26,7 @@ class QuantityControl extends StatelessWidget {
           onTap: onDecrement,
           size: size,
           color: quantity <= 1 ? AppColors.accent : AppColors.primary,
-          semanticLabel: 'Decrease quantity',
+          semanticLabel: AppLocalizations.of(context)!.decreaseQuantity,
         ),
         SizedBox(
           width: 36,
@@ -44,7 +45,7 @@ class QuantityControl extends StatelessWidget {
           onTap: onIncrement,
           size: size,
           color: AppColors.primary,
-          semanticLabel: 'Increase quantity',
+          semanticLabel: AppLocalizations.of(context)!.increaseQuantity,
         ),
       ],
     );

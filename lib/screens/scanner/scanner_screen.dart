@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ipot_pos/state/cart_controller.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../../navigation/app_routes.dart';
 
 class ScannerScreen extends StatefulWidget {
@@ -34,10 +35,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
       setState(() => _scanned = true);
       _controller.stop();
       Get.defaultDialog(
-        title: 'Invalid QR Code',
-        middleText: 'Please scan a valid restaurant table QR code.',
+        title: AppLocalizations.of(context)!.invalidQrTitle,
+        middleText: AppLocalizations.of(context)!.invalidQrDesc,
         barrierDismissible: false,
-        textConfirm: 'Retry',
+        textConfirm: AppLocalizations.of(context)!.retry,
         confirmTextColor: Colors.white,
         buttonColor: AppColors.primary,
         onConfirm: () {
@@ -98,10 +99,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 8),
-                  const Center(
+                  Center(
                     child: Text(
-                      'Scan QR Code',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.scanQrTitle,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -110,10 +111,10 @@ class _ScannerScreenState extends State<ScannerScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Center(
+                  Center(
                     child: Text(
-                      'Point camera at the table QR code',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      AppLocalizations.of(context)!.scanQrSubtitle,
+                      style: const TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                   ),
                 ],
@@ -157,9 +158,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(color: Colors.white38, width: 1),
                         ),
-                        child: const Text(
-                          'Use Demo Table (T001)',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.useDemoTable,
+                          style: const TextStyle(
                               color: Colors.white, fontWeight: FontWeight.w600),
                         ),
                       ),

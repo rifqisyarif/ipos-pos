@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:ipot_pos/local/connectivity_service.dart';
 import 'package:ipot_pos/navigation/app_routes.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import 'package:ipot_pos/state/cart_controller.dart';
 import 'package:ipot_pos/state/order_controller.dart';
 import 'package:path_provider/path_provider.dart';
@@ -32,6 +33,9 @@ class MainApp extends StatelessWidget {
       getPages: AppRoutes.pages,
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'), // Runtime language switching support
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF1A1A2E),

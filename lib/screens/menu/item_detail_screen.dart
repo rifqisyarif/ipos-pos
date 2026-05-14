@@ -4,6 +4,7 @@ import 'package:ipot_pos/components/connectivity_banner.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
 import '../../components/customization_sheet.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../../state/menu_controller.dart';
 
 class ItemDetailScreen extends StatelessWidget {
@@ -17,8 +18,8 @@ class ItemDetailScreen extends StatelessWidget {
 
     if (item == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Item Not Found')),
-        body: const Center(child: Text('Item not found')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.itemNotFound)),
+        body: Center(child: Text(AppLocalizations.of(context)!.itemNotFound)),
       );
     }
 
@@ -96,9 +97,9 @@ class ItemDetailScreen extends StatelessWidget {
                     ),
                     if (item.customizationGroups.isNotEmpty) ...[
                       const SizedBox(height: 24),
-                      const Text(
-                        'Customizations available',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.customizationsAvailable,
+                        style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
                         ),
@@ -125,9 +126,9 @@ class ItemDetailScreen extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => CustomizationSheet.show(item),
                         icon: const Icon(Icons.add_shopping_cart),
-                        label: const Text(
-                          'Add to Cart',
-                          style: TextStyle(
+                        label: Text(
+                          AppLocalizations.of(context)!.addToCart,
+                          style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w700),
                         ),
                       ),

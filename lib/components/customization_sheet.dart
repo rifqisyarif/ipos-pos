@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ipot_pos/utils/constant.dart';
 import 'package:ipot_pos/utils/formatter.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../models/menu_item.dart';
 import '../state/cart_controller.dart';
 
@@ -182,7 +183,7 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
                     TextField(
                       controller: _notes,
                       decoration: InputDecoration(
-                        hintText: 'Special instructions (optional)',
+                        hintText: AppLocalizations.of(context)!.specialInstructions,
                         hintStyle: TextStyle(color: Colors.grey[400]),
                         filled: true,
                         fillColor: AppColors.background,
@@ -207,7 +208,7 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
                     child: ElevatedButton(
                       onPressed: _canSubmit ? _addToCart : null,
                       child: Text(
-                          'Add to Cart — ${Formatters.price(totalPrice)}',
+                          AppLocalizations.of(context)!.addToCartPrice(Formatters.price(totalPrice)),
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w700)),
                     ),
@@ -251,7 +252,7 @@ class _GroupWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  group.required ? 'Required' : 'Optional',
+                  group.required ? AppLocalizations.of(context)!.requiredLabel : AppLocalizations.of(context)!.optionalLabel,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -263,7 +264,7 @@ class _GroupWidget extends StatelessWidget {
               ),
               if (group.maxSelections > 1) ...[
                 const SizedBox(width: 6),
-                Text('Up to ${group.maxSelections}',
+                Text(AppLocalizations.of(context)!.upToN(group.maxSelections),
                     style: const TextStyle(
                         fontSize: 11, color: AppColors.textSecondary)),
               ]

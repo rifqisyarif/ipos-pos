@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ipot_pos/utils/constant.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 import '../models/order.dart';
 
 class OrderStatusStepper extends StatelessWidget {
@@ -7,13 +8,15 @@ class OrderStatusStepper extends StatelessWidget {
 
   const OrderStatusStepper({super.key, required this.currentStatus});
 
-  static const _labels = {
-    OrderStatus.pending: 'Order\nReceived',
-    OrderStatus.confirmed: 'Order\nConfirmed',
-    OrderStatus.preparing: 'Being\nPrepared',
-    OrderStatus.ready: 'Ready\nto Serve',
-    OrderStatus.served: 'Served!',
-  };
+  Map<String, String> _getLabels(BuildContext context) {
+    return {
+      OrderStatus.pending: AppLocalizations.of(context)!.orderReceivedState,
+      OrderStatus.confirmed: AppLocalizations.of(context)!.orderConfirmedState,
+      OrderStatus.preparing: AppLocalizations.of(context)!.beingPreparedState,
+      OrderStatus.ready: AppLocalizations.of(context)!.readyToServeState,
+      OrderStatus.served: AppLocalizations.of(context)!.servedState,
+    };
+  }
 
   static const _icons = {
     OrderStatus.pending: Icons.receipt_long,
@@ -26,6 +29,7 @@ class OrderStatusStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentIdx = OrderStatus.stepIndex(currentStatus);
+    final labels = _getLabels(context);
 
     return Row(
       children: List.generate(OrderStatus.steps.length, (i) {
@@ -71,7 +75,7 @@ class OrderStatusStepper extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      _labels[step] ?? step,
+                      labels[step] ?? step,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,

@@ -8,6 +8,7 @@ import '../../navigation/app_routes.dart';
 import '../../state/cart_controller.dart';
 import '../../state/order_controller.dart';
 import '../../components/order_status_stepper.dart';
+import 'package:ipot_pos/l10n/app_localizations.dart';
 
 class OrderTrackingScreen extends StatelessWidget {
   const OrderTrackingScreen({super.key});
@@ -19,8 +20,8 @@ class OrderTrackingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Order Status',
-            style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(AppLocalizations.of(context)!.orderStatusTitle,
+            style: const TextStyle(fontWeight: FontWeight.w800)),
         automaticallyImplyLeading: false,
       ),
       body: Obx(() {
@@ -84,8 +85,8 @@ class OrderTrackingScreen extends StatelessWidget {
         ),
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Order More',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+        label: Text(AppLocalizations.of(context)!.orderMore,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
       ),
     );
   }
