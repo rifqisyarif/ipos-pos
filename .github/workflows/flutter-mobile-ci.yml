@@ -1,56 +1,54 @@
-# .github/workflows/flutter-mobile-ci.yml
+  # .github/workflows/flutter-mobile-ci.yml
 
-name: Flutter Mobile CI
+  name: Flutter Mobile CI
 
-on:
-  pull_request:
-    branches:
-      - main
-      - master
-      - develop
+  on:
+    push:
+      branches:
+        - main
 
-jobs:
-  flutter-build:
-    name: Flutter Build Check
-    runs-on: macos-latest
+  jobs:
+    flutter-build:
+      name: Flutter Build Check
+      runs-on: macos-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 17
+        - name: Setup Java
+          uses: actions/setup-java@v4
+          with:
+            distribution: zulu
+            java-version: 17
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.41.9
-          channel: stable
-          cache: true
+        - name: Setup Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: 3.41.9
+            channel: stable
+            cache: true
 
-      - name: Flutter Version
-        run: flutter --version
+        - name: Flutter Version
+          run: flutter --version
 
-      - name: Install dependencies
-        run: flutter pub get
+        - name: Install dependencies
+          run: flutter pub get
 
-      - name: Analyze project
-        run: flutter analyze
+        - name: Analyze project
+          run: flutter analyze
 
-      - name: Run tests
-        run: flutter test integration_test
+        - name: Run tests
+          run: flutter test integration_test
 
-      # Android build validation
-      - name: Build Android APK
-        run: flutter build apk --release
+        # Android build validation
+        - name: Build Android APK
+          run: flutter build apk --release
 
-      # Optional: Android App Bundle
-      - name: Build Android App Bundle
-        run: flutter build appbundle --release
+        # Optional: Android App Bundle
+        - name: Build Android App Bundle
+          run: flutter build appbundle --release
 
-      # iOS build validation
-      - name: Build iOS (No Codesign)
-        run: flutter build ios --release --no-codesign
+        # iOS build validation
+        - name: Build iOS (No Codesign)
+          run: flutter build ios --release --no-codesign
