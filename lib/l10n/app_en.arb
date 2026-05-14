@@ -1,0 +1,85 @@
+{
+  "@@locale": "en",
+  "appTitle": "IPOT POS",
+  "scanQrTitle": "Scan QR Code",
+  "scanQrSubtitle": "Point camera at the table QR code",
+  "torch": "Torch",
+  "flip": "Flip",
+  "useDemoTable": "Use Demo Table (T001)",
+  "invalidQrTitle": "Invalid QR Code",
+  "invalidQrDesc": "Please scan a valid restaurant table QR code.",
+  "retry": "Retry",
+  "menu": "Menu",
+  "searchMenu": "Search menu...",
+  "noItems": "No items found",
+  "loadingMenu": "Loading menu...",
+  "viewCart": "View Cart",
+  "itemNotFound": "Item Not Found",
+  "customizationsAvailable": "Customizations available",
+  "addToCart": "Add to Cart",
+  "myCart": "My Cart",
+  "clear": "Clear",
+  "clearCart": "Clear Cart",
+  "clearCartConfirm": "Remove all items from cart?",
+  "cancel": "Cancel",
+  "subtotal": "Subtotal",
+  "tax": "Tax (10%)",
+  "taxDesc": "Calculated at checkout",
+  "total": "Total",
+  "placeOrder": "Place Order",
+  "cartEmpty": "Your cart is empty",
+  "browseMenuAdd": "Browse the menu and add some items!",
+  "browseMenu": "Browse Menu",
+  "orderStatusTitle": "Order Status",
+  "orderMore": "Order More",
+  "orderReceivedDesc": "Your order has been received!",
+  "orderConfirmedDesc": "Great! Your order is confirmed.",
+  "orderPreparingDesc": "Our chefs are preparing your food 🍳",
+  "orderReadyDesc": "Your order is ready! 🎉",
+  "orderServedDesc": "Enjoy your meal! 😋",
+  "trackingOrder": "Tracking your order...",
+  "orderConfirmedMsg": "Order Confirmed!",
+  "autoUpdating": "Auto-updating every 8 s",
+  "noActiveOrderQueued": "No active order — see queued orders below",
+  "noActiveOrder": "No active order yet",
+  "ordersInQueue": "{count} order(s) in queue",
+  "@ordersInQueue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "retryAll": "Retry All",
+  "willRetryWhenOnline": "Will retry when online",
+  "remove": "Remove",
+  "offline": "OFFLINE",
+  "noInternet": "No internet connection",
+  "backOnline": "Back online",
+  "requiredLabel": "Required",
+  "optionalLabel": "Optional",
+  "upToN": "Up to {max}",
+  "@upToN": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "specialInstructions": "Special instructions (optional)",
+  "addToCartPrice": "Add to Cart — {price}",
+  "@addToCartPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "increaseQuantity": "Increase quantity",
+  "decreaseQuantity": "Decrease quantity",
+  "orderReceivedState": "Order\nReceived",
+  "orderConfirmedState": "Order\nConfirmed",
+  "beingPreparedState": "Being\nPrepared",
+  "readyToServeState": "Ready\nto Serve",
+  "servedState": "Served!"
+}
