@@ -7,7 +7,7 @@ import 'package:ipot_pos/state/cart_controller.dart';
 import 'package:ipot_pos/state/order_controller.dart';
 import 'package:path_provider/path_provider.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final dir = await getApplicationDocumentsDirectory();
 

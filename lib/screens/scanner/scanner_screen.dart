@@ -73,8 +73,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   void _useDemoTable() {
     const tableId = 'T001';
-    // Get.find<CartController>().tableId = tableId;
-    // Get.toNamed(AppRoutes.menu, arguments: tableId);
+    Get.find<CartController>().tableId = tableId;
+    Get.toNamed(AppRoutes.menu, arguments: tableId);
   }
 
   @override
