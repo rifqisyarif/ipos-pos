@@ -41,7 +41,7 @@ jobs:
         run: flutter analyze
 
       - name: Run tests
-        run: flutter test
+        run: flutter test integration_test
 
       # Android build validation
       - name: Build Android APK
