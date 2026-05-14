@@ -183,7 +183,8 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
                     TextField(
                       controller: _notes,
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)!.specialInstructions,
+                        hintText:
+                            AppLocalizations.of(context)!.specialInstructions,
                         hintStyle: TextStyle(color: Colors.grey[400]),
                         filled: true,
                         fillColor: AppColors.background,
@@ -208,7 +209,8 @@ class _CustomizationSheetState extends State<CustomizationSheet> {
                     child: ElevatedButton(
                       onPressed: _canSubmit ? _addToCart : null,
                       child: Text(
-                          AppLocalizations.of(context)!.addToCartPrice(Formatters.price(totalPrice)),
+                          AppLocalizations.of(context)!
+                              .addToCartPrice(Formatters.price(totalPrice)),
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w700)),
                     ),
@@ -247,12 +249,14 @@ class _GroupWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: group.required
-                      ? AppColors.accent.withOpacity(0.12)
+                      ? AppColors.accent.withValues(alpha: 0.12)
                       : Colors.grey[100],
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  group.required ? AppLocalizations.of(context)!.requiredLabel : AppLocalizations.of(context)!.optionalLabel,
+                  group.required
+                      ? AppLocalizations.of(context)!.requiredLabel
+                      : AppLocalizations.of(context)!.optionalLabel,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -274,7 +278,8 @@ class _GroupWidget extends StatelessWidget {
         ...group.options.map((o) => Semantics(
               button: true,
               toggled: o.isSelected,
-              label: '${o.name}, extra ${Formatters.priceModifier(o.priceModifier)}',
+              label:
+                  '${o.name}, extra ${Formatters.priceModifier(o.priceModifier)}',
               child: GestureDetector(
                 onTap: () => onToggle(o),
                 child: Container(
@@ -283,7 +288,7 @@ class _GroupWidget extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: o.isSelected
-                        ? AppColors.primary.withOpacity(0.06)
+                        ? AppColors.primary.withValues(alpha: 0.06)
                         : AppColors.background,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(

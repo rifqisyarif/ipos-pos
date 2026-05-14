@@ -114,7 +114,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   Center(
                     child: Text(
                       AppLocalizations.of(context)!.scanQrSubtitle,
-                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                   ),
                 ],
@@ -154,7 +155,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(color: Colors.white38, width: 1),
                         ),
@@ -194,12 +195,12 @@ class _ScannerOverlay extends StatelessWidget {
           ),
         ),
         // Corner brackets
-        Center(
+        const Center(
           child: SizedBox(
             width: boxSize,
             height: boxSize,
             child: Stack(
-              children: const [
+              children: [
                 _Corner(corner: Alignment.topLeft),
                 _Corner(corner: Alignment.topRight),
                 _Corner(corner: Alignment.bottomLeft),
@@ -222,7 +223,6 @@ class _OverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.black54;
-    final half = boxSize / 2;
     final rect =
         Rect.fromCenter(center: center, width: boxSize, height: boxSize);
 
@@ -329,7 +329,7 @@ class _ActionButton extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: Colors.white, size: 22),

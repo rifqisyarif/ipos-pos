@@ -28,7 +28,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GetMaterialApp(
       getPages: AppRoutes.pages,
       debugShowCheckedModeBanner: false,

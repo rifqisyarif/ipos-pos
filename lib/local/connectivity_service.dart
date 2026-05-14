@@ -33,7 +33,7 @@ class ConnectivityService extends GetxService {
       try {
         Get.find<OrderController>().retryAllQueued();
       } catch (e) {
-        print('retryAllQueued error: $e');
+        //
       }
     }
   }

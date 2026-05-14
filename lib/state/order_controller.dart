@@ -87,7 +87,7 @@ class OrderController extends GetxController {
     final connectivity = Get.find<ConnectivityService>();
     if (!connectivity.isOnline.value) {
       // We don't show snackbar here because this is often called automatically
-      // by the ConnectivityService when it thinks it's online, 
+      // by the ConnectivityService when it thinks it's online,
       // or from the clear all/retry all button.
       // A manual click can just rely on retryQueued snackbar.
       return;
@@ -97,7 +97,7 @@ class OrderController extends GetxController {
     for (final q in snapshot) {
       // Prevent running multiple queue drains at once
       if (isSubmitting.value && snapshot.length > 1) {
-          // just let it take its course if it's already submitting.
+        // just let it take its course if it's already submitting.
       }
       await retryQueued(q);
     }
@@ -142,7 +142,6 @@ class OrderController extends GetxController {
       } catch (e) {
         log(e.toString(), name: 'Error get queue');
       }
-      print('queue:${queue?.length}');
       if (queue?.isNotEmpty == true) {
         if (isSubmitting.value) return; // Prevent double submission
         final first = queue?.first;
@@ -172,7 +171,7 @@ class OrderController extends GetxController {
             );
             listCurrentOrder[i] = updated;
           } catch (e) {
-            print('polling error: $e');
+            //
           }
         }
       }
