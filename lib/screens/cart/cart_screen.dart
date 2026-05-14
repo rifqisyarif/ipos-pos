@@ -237,12 +237,19 @@ class _OrderSummary extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Subtotal',
                     style: TextStyle(color: AppColors.textSecondary)),
-                Obx(() => Text(Formatters.price(cart.subtotal),
-                    style: const TextStyle(fontWeight: FontWeight.w700))),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Obx(() => Text(
+                        Formatters.price(cart.subtotal),
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )),
+                ),
               ],
             ),
             const SizedBox(height: 4),
@@ -256,19 +263,24 @@ class _OrderSummary extends StatelessWidget {
             ),
             const Divider(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Total',
                     style:
                         TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                Obx(() => Text(
-                      Formatters.price(cart.subtotal),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                        color: AppColors.accent,
-                      ),
-                    )),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Obx(() => Text(
+                        Formatters.price(cart.subtotal),
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: AppColors.accent,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )),
+                ),
               ],
             ),
             const SizedBox(height: 16),

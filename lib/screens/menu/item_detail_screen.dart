@@ -69,12 +69,18 @@ class ItemDetailScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          Formatters.price(item.price),
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.accent,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            Formatters.price(item.price),
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.accent,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

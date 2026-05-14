@@ -86,7 +86,7 @@ class _MenuContent extends StatelessWidget {
         ),
         // Category tabs
         Obx(() => SizedBox(
-              height: 52,
+              height: 64,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(
@@ -226,14 +226,22 @@ class _CartBar extends StatelessWidget {
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 15),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Text(
-                Formatters.price(cart.subtotal),
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  Formatters.price(cart.subtotal),
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
