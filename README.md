@@ -96,6 +96,8 @@ flutter run
 flutter build apk --release
 ```
 
+- **Working build download**: https://drive.google.com/file/d/1sTBtLLVemlw1hO8wpVPKvn1w8kRK44D6/view?usp=sharing
+
 #### **iOS (IPA)**
 
 ```bash
