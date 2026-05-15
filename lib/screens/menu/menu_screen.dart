@@ -91,7 +91,7 @@ class _MenuContent extends StatelessWidget {
         ),
         // Category tabs
         Obx(() => SizedBox(
-              height: 64,
+              height: 54,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(
@@ -110,11 +110,11 @@ class _MenuContent extends StatelessWidget {
                           margin: const EdgeInsets.only(right: 8),
                           alignment: Alignment.center,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 6),
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color:
                                 isSelected ? AppColors.primary : Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               if (isSelected)
                                 BoxShadow(
@@ -167,7 +167,7 @@ class _MenuContent extends StatelessWidget {
                 return Future.delayed(const Duration(milliseconds: 500));
               },
               child: ListView.builder(
-                padding: const EdgeInsets.only(top: 8, bottom: 100),
+                padding: const EdgeInsets.only( bottom: 100),
                 itemCount: items.length,
                 itemBuilder: (_, i) => MenuItemCard(
                   item: items[i],
@@ -237,17 +237,15 @@ class _CartBar extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  Formatters.price(cart.subtotal),
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              Text(
+                Formatters.price(cart.subtotal),
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

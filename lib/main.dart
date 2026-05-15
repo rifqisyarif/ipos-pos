@@ -36,7 +36,6 @@ class MainApp extends StatelessWidget {
       initialRoute: '/',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('en'), // Runtime language switching support
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF1A1A2E),
