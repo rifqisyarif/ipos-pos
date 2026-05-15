@@ -113,32 +113,61 @@ flutter build web --release
 ## 🧪 Testing
 
 ### Run Unit Tests
+
 To run all tests in the `test/` directory:
+
 ```bash
 flutter test
 ```
 
 ### Run Integration Tests
+
 To run end-to-end integration tests:
+
 ```bash
 flutter test integration_test
 ```
+
 or for a specific test file:
+
 ```bash
 flutter test integration_test/app_test.dart
 ```
 
 ---
 
+## 🏛 Architecture
+
+This project follows a modular and layered architecture, prioritizing responsiveness and offline reliability.
+
+### Overview
+
+- **State Management**: Uses **GetX** for reactive state (`.obs`), setState for cheap local state, and dependency injection.
+- **Pattern**: A clean separation between UI (Screens/Components) and Business Logic (Controllers).
+- **Offline Strategy**: Utilizes **Hive** for local persistence. Orders are queued locally when offline and synchronized automatically when connectivity is restored.
+
+### Layer Descriptions
+
+- **UI Layer**: Purely presentational widgets located in `lib/screens` and `lib/components`.
+- **State Layer**: `GetxController` classes in `lib/state` manage business logic and state transitions.
+- **Data Layer**:
+  - **API**: `ApiClient` handles network communication.
+  - **Local**: Services in `lib/local` manage Hive storage for caching and queuing.
+- **Model Layer**: Plain Dart objects in `lib/models` with JSON mapping logic.
+
+---
+
 ## 🏗 Project Structure
 
 - `lib/api/`: API client and network logic.
+- `lib/components/`: Reusable UI components used across multiple screens.
 - `lib/config/`: App configuration and environment variables.
-- `lib/local/`: Local storage services (Hive).
+- `lib/local/`: Local storage services (Hive) and offline logic.
 - `lib/models/`: Data models and JSON serialization.
 - `lib/navigation/`: Route management using GetX.
-- `lib/state/`: State management (GetX Controllers).
-- `lib/ui/`: UI components and screens.
+- `lib/screens/`: Main application screens and layouts.
+- `lib/state/`: Business logic and state management (GetX Controllers).
+- `lib/utils/`: Helper classes, constants, and formatters.
 
 ---
 
