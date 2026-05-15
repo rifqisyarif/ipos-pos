@@ -32,8 +32,18 @@
         - name: Flutter Version
           run: flutter --version
 
-        - name: Install dependencies
-          run: flutter pub get
+        - name: Clean Flutter
+          run: |
+            flutter clean
+            flutter pub get
+
+        - name: Clean CocoaPods
+          run: |
+            cd ios
+            rm -rf Pods
+            rm -f Podfile.lock
+            pod repo update
+            pod install
 
         - name: Analyze project
           run: flutter analyze
