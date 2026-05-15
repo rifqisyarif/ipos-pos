@@ -19,12 +19,12 @@ class AppRoutes {
       page: () => const MenuScreen(),
       transition: Transition.fadeIn,
     ),
-     GetPage(
+    GetPage(
       name: itemDetail,
       page: () => const ItemDetailScreen(),
       transition: Transition.downToUp,
     ),
-     GetPage(
+    GetPage(
       name: cart,
       page: () => const CartScreen(),
       transition: Transition.rightToLeft,

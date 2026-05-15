@@ -33,14 +33,14 @@ class ItemDetailScreen extends StatelessWidget {
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   child: Center(
                     child: Text(
                       item.name[0],
                       style: TextStyle(
                         fontSize: 100,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary.withOpacity(0.15),
+                        color: AppColors.primary.withValues(alpha: 0.15),
                       ),
                     ),
                   ),
@@ -111,7 +111,7 @@ class ItemDetailScreen extends StatelessWidget {
                             .map((g) => Chip(
                                   label: Text(g.name),
                                   backgroundColor:
-                                      AppColors.primary.withOpacity(0.08),
+                                      AppColors.primary.withValues(alpha: 0.08),
                                   labelStyle: const TextStyle(
                                     fontSize: 12,
                                     color: AppColors.primary,

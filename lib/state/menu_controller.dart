@@ -15,7 +15,8 @@ class MenuController extends GetxController {
   List<MenuItem> get filteredItems {
     var items = allItems.toList();
     if (selectedCategoryId.value != null) {
-      items = items.where((i) => i.categoryId == selectedCategoryId.value).toList();
+      items =
+          items.where((i) => i.categoryId == selectedCategoryId.value).toList();
     }
     if (searchQuery.value.isNotEmpty) {
       final q = searchQuery.value.toLowerCase();

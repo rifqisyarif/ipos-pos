@@ -39,9 +39,9 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
     // React to changes
     _worker = ever(connectivity.isOnline, (bool online) {
       if (!mounted) return;
-      
+
       _timer?.cancel();
-      
+
       if (!online) {
         setState(() => _showingRestored = false);
         _anim.forward();
@@ -51,7 +51,7 @@ class _ConnectivityBannerState extends State<ConnectivityBanner>
         _anim.forward();
         _timer = Timer(const Duration(seconds: 2), () {
           if (mounted && connectivity.isOnline.value) {
-             _anim.reverse();
+            _anim.reverse();
           }
         });
       }
@@ -130,8 +130,8 @@ class _BannerContent extends StatelessWidget {
                         fontSize: 13,
                         fontWeight: FontWeight.w700)),
                 Text(sub,
-                    style: const TextStyle(
-                        color: Colors.white70, fontSize: 11)),
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 11)),
               ],
             ),
           ),

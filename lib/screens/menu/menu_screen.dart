@@ -27,7 +27,8 @@ class MenuScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Obx(() => Text(
-              menuCtrl.restaurant.value?.name ?? AppLocalizations.of(context)!.menu,
+              menuCtrl.restaurant.value?.name ??
+                  AppLocalizations.of(context)!.menu,
               style: const TextStyle(fontWeight: FontWeight.w800),
             )),
         leading: IconButton(
@@ -45,7 +46,10 @@ class MenuScreen extends StatelessWidget {
               onRetry: () => menuCtrl.loadMenu(tableId),
             );
           }
-          return _MenuContent(menuCtrl: menuCtrl,tableId: tableId,);
+          return _MenuContent(
+            menuCtrl: menuCtrl,
+            tableId: tableId,
+          );
         }),
       ),
       bottomNavigationBar: Obx(() {
@@ -98,7 +102,7 @@ class _MenuContent extends StatelessWidget {
                   return Obx(
                     () {
                       final isSelected =
-                      menuCtrl.selectedCategoryId.value == cat.id;
+                          menuCtrl.selectedCategoryId.value == cat.id;
                       return GestureDetector(
                         onTap: () => menuCtrl.selectCategory(cat.id),
                         child: AnimatedContainer(
@@ -114,7 +118,8 @@ class _MenuContent extends StatelessWidget {
                             boxShadow: [
                               if (isSelected)
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color:
+                                      AppColors.primary.withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -198,7 +203,7 @@ class _CartBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.4),
+                color: AppColors.primary.withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               )

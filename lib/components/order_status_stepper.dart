@@ -58,7 +58,8 @@ class OrderStatusStepper extends StatelessWidget {
                         boxShadow: isCurrent
                             ? [
                                 BoxShadow(
-                                  color: AppColors.accent.withOpacity(0.4),
+                                  color:
+                                      AppColors.accent.withValues(alpha: 0.4),
                                   blurRadius: 12,
                                   spreadRadius: 2,
                                 )
@@ -79,9 +80,8 @@ class OrderStatusStepper extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight: isCurrent
-                            ? FontWeight.w700
-                            : FontWeight.normal,
+                        fontWeight:
+                            isCurrent ? FontWeight.w700 : FontWeight.normal,
                         color: isCurrent
                             ? AppColors.accent
                             : isDone
@@ -97,7 +97,8 @@ class OrderStatusStepper extends StatelessWidget {
                   child: Container(
                     height: 2,
                     margin: const EdgeInsets.only(bottom: 28),
-                    color: i < currentIdx ? AppColors.success : Colors.grey[200],
+                    color:
+                        i < currentIdx ? AppColors.success : Colors.grey[200],
                   ),
                 ),
             ],

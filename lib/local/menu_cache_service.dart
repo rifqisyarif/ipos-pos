@@ -4,7 +4,7 @@ class MenuCacheService {
   static const _boxName = 'menu_cache';
   static const _menuKey = 'menus';
 
-  Future<void> cacheMenus(Map<String,dynamic> menus) async {
+  Future<void> cacheMenus(Map<String, dynamic> menus) async {
     final box = Hive.box(_boxName);
 
     await box.put(_menuKey, menus);
@@ -17,6 +17,6 @@ class MenuCacheService {
 
     if (data == null) return {};
 
-    return Map<String,dynamic>.from(data);
+    return Map<String, dynamic>.from(data);
   }
 }

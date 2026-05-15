@@ -86,7 +86,8 @@ class OrderTrackingScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(AppLocalizations.of(context)!.orderMore,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -203,7 +204,8 @@ class _ActiveOrderSection extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
               ],
             ),
             child: OrderStatusStepper(currentStatus: order.status),
@@ -221,7 +223,7 @@ class _ActiveOrderSection extends StatelessWidget {
                     height: 11,
                     child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.accent.withOpacity(0.6)),
+                        color: AppColors.accent.withValues(alpha: 0.6)),
                   ),
                   const SizedBox(width: 8),
                   const Text('Auto-updating every 8 s',
@@ -307,7 +309,7 @@ class _QueueHeader extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: (online ? AppColors.warning : Colors.grey)
-                        .withOpacity(0.12),
+                        .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -404,7 +406,6 @@ class _QueuedOrderTile extends StatelessWidget {
       required this.onRemove});
 
   // ── Read directly from the raw map ──────────────────────────────────
-  String get _localId => queued['local_id'] as String? ?? '—';
   String get orderId => queued['id'] as String? ?? '—';
   String get _tableId => queued['table_id'] as String? ?? '—';
   double get _total => (queued['total'] as num?)?.toDouble() ?? 0.0;
@@ -432,11 +433,11 @@ class _QueuedOrderTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border:
-            Border.all(color: AppColors.warning.withOpacity(0.35), width: 1.2),
+        border: Border.all(
+            color: AppColors.warning.withValues(alpha: 0.35), width: 1.2),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 6,
               offset: const Offset(0, 2)),
         ],
@@ -451,7 +452,7 @@ class _QueuedOrderTile extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 34, minHeight: 34),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.15),
+                color: AppColors.warning.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -518,8 +519,8 @@ class _QueuedOrderTile extends StatelessWidget {
                     onTap: isSubmitting ? null : onRetry,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 7),
                       decoration: BoxDecoration(
                         color:
                             isSubmitting ? Colors.grey[200] : AppColors.primary,
@@ -575,7 +576,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(label,
@@ -593,7 +594,7 @@ class _OfflineBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.warning.withOpacity(0.15),
+        color: AppColors.warning.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),
       ),
       child: const Text('OFFLINE',

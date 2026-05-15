@@ -110,10 +110,8 @@ class ApiClient {
 
     final connectivityResult = await Connectivity().checkConnectivity();
     final isOffline = connectivityResult.contains(ConnectivityResult.none);
-    print('connectivityResult: $connectivityResult');
 
     if (isOffline) {
-      print('masuk offline');
       return menuCacheService.getMenus();
     }
 
@@ -130,7 +128,6 @@ class ApiClient {
     // Fallback to mock data
     await Future.delayed(const Duration(milliseconds: 800));
     menuCacheService.cacheMenus(_mockData); // Cache menu data to local storage
-    print('offline data: ${menuCacheService.getMenus()}');
     return _mockData;
   }
 
